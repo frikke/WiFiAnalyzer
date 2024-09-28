@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ class Configuration(val largeScreen: Boolean) {
         get() = size == SIZE_MAX
 
     fun wiFiChannelPair(countryCode: String): Unit =
-        WiFiBand.values().forEach {
+        WiFiBand.entries.forEach {
             this.wiFiChannelPair[it] = it.wiFiChannels.wiFiChannelPairFirst(countryCode)
         }
 
@@ -47,7 +47,7 @@ class Configuration(val largeScreen: Boolean) {
     }
 
     init {
-        WiFiBand.values().forEach {
+        WiFiBand.entries.forEach {
             this.wiFiChannelPair[it] = WiFiChannels.UNKNOWN
         }
 

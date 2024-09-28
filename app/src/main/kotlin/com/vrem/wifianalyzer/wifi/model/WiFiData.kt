@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,7 @@ import com.vrem.wifianalyzer.wifi.predicate.Predicate
 class WiFiData(val wiFiDetails: List<WiFiDetail>, val wiFiConnection: WiFiConnection) {
 
     fun connection(): WiFiDetail =
-        wiFiDetails
-            .find { connected(it) }
-            ?.let { copy(it) }
-            ?: WiFiDetail.EMPTY
+        wiFiDetails.firstOrNull { connected(it) }?.let { copy(it) } ?: WiFiDetail.EMPTY
 
     fun wiFiDetails(predicate: Predicate, sortBy: SortBy): List<WiFiDetail> =
         wiFiDetails(predicate, sortBy, GroupBy.NONE)
@@ -58,8 +55,9 @@ class WiFiData(val wiFiDetails: List<WiFiDetail>, val wiFiConnection: WiFiConnec
             1 -> sortedWith.first()
             else ->
                 WiFiDetail(
-                        sortedWith.first(),
-                        sortedWith.subList(1, sortedWith.size).sortedWith(sortBy.sort))
+                    sortedWith.first(),
+                    sortedWith.subList(1, sortedWith.size).sortedWith(sortBy.sort)
+                )
         }
     }
 
@@ -75,7 +73,7 @@ class WiFiData(val wiFiDetails: List<WiFiDetail>, val wiFiConnection: WiFiConnec
         }
 
     private fun connected(it: WiFiDetail): Boolean =
-            wiFiConnection.wiFiIdentifier.equals(it.wiFiIdentifier, true)
+        wiFiConnection.wiFiIdentifier.equals(it.wiFiIdentifier, true)
 
     private fun copy(wiFiDetail: WiFiDetail): WiFiDetail {
         val vendorName: String = MainContext.INSTANCE.vendorService.findVendorName(wiFiDetail.wiFiIdentifier.bssid)

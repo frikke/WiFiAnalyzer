@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,7 +17,7 @@
  */
 package com.vrem.wifianalyzer.wifi.band
 
-import java.util.*
+import java.util.SortedSet
 
 internal class WiFiChannelCountryGHZ6 {
     private val channelsSet1: Set<Int> = setOf(1, 5, 9, 13, 17, 21, 25, 29)

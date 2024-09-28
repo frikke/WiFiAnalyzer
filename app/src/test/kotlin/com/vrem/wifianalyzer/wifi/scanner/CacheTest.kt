@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,13 @@
 package com.vrem.wifianalyzer.wifi.scanner
 
 import android.net.wifi.ScanResult
-import com.nhaarman.mockitokotlin2.*
 import com.vrem.wifianalyzer.MainContextHelper
 import com.vrem.wifianalyzer.wifi.band.WiFiRange
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 
 class CacheTest {
     private val scanResult1: ScanResult = mock()
@@ -50,17 +50,17 @@ class CacheTest {
     }
 
     @Test
-    fun testAddWithSizeAvailable() {
+    fun addWithSizeAvailable() {
         // setup
         val scanResults = listOf<ScanResult>()
         // execute
         fixture.add(scanResults)
         // validate
-        assertEquals(scanResults, fixture.first())
+        assertThat(fixture.first()).isEqualTo(scanResults)
     }
 
     @Test
-    fun testAddCompliesToMaxCacheSizeWithSizeAvailable() {
+    fun addCompliesToMaxCacheSizeWithSizeAvailable() {
         // setup
         val cacheSize = 2
         val expected: MutableList<List<ScanResult>> = mutableListOf()
@@ -71,26 +71,26 @@ class CacheTest {
             fixture.add(scanResults)
         }
         // validate
-        assertEquals(cacheSize, expected.size)
-        assertEquals(expected[cacheSize - 1], fixture.first())
-        assertEquals(expected[cacheSize - 2], fixture.last())
+        assertThat(expected).hasSize(cacheSize)
+        assertThat(fixture.first()).isEqualTo(expected[cacheSize - 1])
+        assertThat(fixture.last()).isEqualTo(expected[cacheSize - 2])
     }
 
     @Test
-    fun testScanResultsWithSizeAvailable() {
+    fun scanResultsWithSizeAvailable() {
         // setup
         withScanResults()
         // execute
         val actual = fixture.scanResults()
         // validate
-        assertEquals(3, actual.size)
+        assertThat(actual).hasSize(3)
         validate(scanResult2, -25, actual[0])
         validate(scanResult5, -40, actual[1])
         validate(scanResult6, -10, actual[2])
     }
 
     @Test
-    fun testSizeWithSizeAvailable() {
+    fun sizeWithSizeAvailable() {
         // setup
         val values: List<WiFiRange> = listOf(
             WiFiRange(1, 4),
@@ -104,25 +104,25 @@ class CacheTest {
         // execute & validate
         values.forEach {
             whenever(settings.scanSpeed()).thenReturn(it.first)
-            assertEquals("Scan Speed:" + it.first, it.second, fixture.size())
+            assertThat(fixture.size()).isEqualTo(it.second)
         }
         verify(settings, times(values.size)).scanSpeed()
     }
 
     @Test
-    fun testAddWithCacheOff() {
+    fun addWithCacheOff() {
         // setup
         whenever(settings.cacheOff()).thenReturn(true)
         val scanResults = listOf<ScanResult>()
         // execute
         fixture.add(scanResults)
         // validate
-        assertEquals(scanResults, fixture.first())
+        assertThat(fixture.first()).isEqualTo(scanResults)
         verify(settings).cacheOff()
     }
 
     @Test
-    fun testAddCompliesToMaxCacheSizeWhenCacheOff() {
+    fun addCompliesToMaxCacheSizeWhenCacheOff() {
         // setup
         val count = 2
         whenever(settings.cacheOff()).thenReturn(true)
@@ -134,65 +134,65 @@ class CacheTest {
             fixture.add(scanResults)
         }
         // validate
-        assertEquals(count, expected.size)
-        assertEquals(expected[count - 1], fixture.first())
-        assertEquals(expected[count - 2], fixture.last())
+        assertThat(expected).hasSize(count)
+        assertThat(fixture.first()).isEqualTo(expected[count - 1])
+        assertThat(fixture.last()).isEqualTo(expected[count - 2])
         verify(settings, times(count)).cacheOff()
     }
 
     @Test
-    fun testScanResultsWhenSingleAndCacheOff() {
+    fun scanResultsWhenSingleAndCacheOff() {
         // setup
         whenever(settings.cacheOff()).thenReturn(true)
         val count = withScanResults()
         // execute
         val actual = fixture.scanResults()
         // validate
-        assertEquals(2, actual.size)
+        assertThat(actual).hasSize(2)
         validate(scanResult3, -30, actual[0])
         validate(scanResult6, -10, actual[1])
         verify(settings, times(count)).cacheOff()
     }
 
     @Test
-    fun testScanResultsWhenMultipleAndCacheOff() {
+    fun scanResultsWhenMultipleAndCacheOff() {
         // setup
         whenever(settings.cacheOff()).thenReturn(true)
         val count = withScanResults() + withScanResults()
         // execute
         val actual = fixture.scanResults()
         // validate
-        assertEquals(2, actual.size)
+        assertThat(actual).hasSize(2)
         validate(scanResult3, -30, actual[0])
         validate(scanResult6, -10, actual[1])
         verify(settings, times(count)).cacheOff()
     }
 
     @Test
-    fun testSizeWhenCacheOff() {
+    fun sizeWhenCacheOff() {
         // setup
         val expected = 1
         whenever(settings.cacheOff()).thenReturn(true)
         // execute
         val actual = fixture.size()
         // validate
-        assertEquals(expected, actual)
+        assertThat(actual).isEqualTo(expected)
         verify(settings).cacheOff()
     }
 
     @Test
-    fun testAdd() {
+    fun add() {
         // setup
         whenever(configuration.sizeAvailable).thenReturn(false)
         val scanResults = listOf<ScanResult>()
         // execute
         fixture.add(scanResults)
         // validate
-        assertEquals(scanResults, fixture.first())
+        assertThat(fixture.first()).isEqualTo(scanResults)
     }
 
     @Test
-    fun testAddCompliesToMaxCacheSize() {
+    fun addCompliesToMaxCacheSize() {
         // setup
         val cacheSize = 2
         whenever(configuration.sizeAvailable).thenReturn(false)
@@ -204,26 +204,26 @@ class CacheTest {
             fixture.add(scanResults)
         }
         // validate
-        assertEquals(cacheSize, expected.size)
-        assertEquals(expected[cacheSize - 1], fixture.first())
-        assertEquals(expected[cacheSize - 2], fixture.last())
+        assertThat(expected).hasSize(cacheSize)
+        assertThat(fixture.first()).isEqualTo(expected[cacheSize - 1])
+        assertThat(fixture.last()).isEqualTo(expected[cacheSize - 2])
     }
 
     @Test
-    fun testScanResultsWhenSingle() {
+    fun scanResultsWhenSingle() {
         // setup
         whenever(configuration.sizeAvailable).thenReturn(false)
         withScanResults()
         // execute
         val actual = fixture.scanResults()
         // validate
-        assertEquals(2, actual.size)
+        assertThat(actual).hasSize(2)
         validate(scanResult3, -47, actual[0])
         validate(scanResult6, -27, actual[1])
     }
 
     @Test
-    fun testScanResultsWhenMultiple() {
+    fun scanResultsWhenMultiple() {
         // setup
         whenever(configuration.sizeAvailable).thenReturn(false)
         withScanResults()
@@ -231,26 +231,26 @@ class CacheTest {
         // execute
         val actual = fixture.scanResults()
         // validate
-        assertEquals(2, actual.size)
+        assertThat(actual).hasSize(2)
         validate(scanResult3, -55, actual[0])
         validate(scanResult6, -35, actual[1])
     }
 
     @Test
-    fun testSize() {
+    fun size() {
         // setup
         val expected = 1
         whenever(configuration.sizeAvailable).thenReturn(false)
         // execute
         val actual = fixture.size()
         // validate
-        assertEquals(expected, actual)
+        assertThat(actual).isEqualTo(expected)
         verify(settings, never()).scanSpeed()
     }
 
     private fun validate(expectedScanResult: ScanResult, expectedLevel: Int, actual: CacheResult) {
-        assertEquals(expectedScanResult, actual.scanResult)
-        assertEquals(expectedLevel, actual.average)
+        assertThat(actual.scanResult).isEqualTo(expectedScanResult)
+        assertThat(actual.average).isEqualTo(expectedLevel)
     }
 
     private fun withScanResults(): Int {

@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,11 +39,12 @@ import com.vrem.wifianalyzer.wifi.predicate.predicate
 import com.vrem.wifianalyzer.wifi.scanner.UpdateNotifier
 
 class ChannelRatingAdapter(
-        context: Context,
-        private val bestChannels: TextView,
-        private val channelRating: ChannelRating = ChannelRating()) :
-        ArrayAdapter<WiFiChannel>(context, R.layout.channel_rating_details, mutableListOf()),
-        UpdateNotifier {
+    context: Context,
+    private val bestChannels: TextView,
+    private val channelRating: ChannelRating = ChannelRating()
+) :
+    ArrayAdapter<WiFiChannel>(context, R.layout.channel_rating_details, mutableListOf()),
+    UpdateNotifier {
 
     private val maxChannelsToDisplay = 11
 
@@ -80,7 +81,7 @@ class ChannelRatingAdapter(
 
     private fun ratingBar(wiFiChannel: WiFiChannel, ratingBar: RatingBar) {
         val strength = reverse(channelRating.strength(wiFiChannel))
-        val size = Strength.values().size
+        val size = Strength.entries.size
         ratingBar.max = size
         ratingBar.numStars = size
         ratingBar.rating = strength.ordinal + 1.toFloat()
@@ -101,15 +102,15 @@ class ChannelRatingAdapter(
 
     private fun errorMessage(wiFiBand: WiFiBand): String = with(context.resources) {
         getText(R.string.channel_rating_best_none).toString() +
-                if (WiFiBand.GHZ2 == wiFiBand) {
-                    getText(R.string.channel_rating_best_alternative).toString() +
-                            " " + getString(WiFiBand.GHZ5.textResource)
-                } else {
-                    String.EMPTY
-                }
+            if (WiFiBand.GHZ2 == wiFiBand) {
+                getText(R.string.channel_rating_best_alternative).toString() +
+                    " " + getString(WiFiBand.GHZ5.textResource)
+            } else {
+                String.EMPTY
+            }
     }
 
     private fun create(parent: ViewGroup): ChannelRatingDetailsBinding =
-            ChannelRatingDetailsBinding.inflate(MainContext.INSTANCE.layoutInflater, parent, false)
+        ChannelRatingDetailsBinding.inflate(MainContext.INSTANCE.layoutInflater, parent, false)
 
 }

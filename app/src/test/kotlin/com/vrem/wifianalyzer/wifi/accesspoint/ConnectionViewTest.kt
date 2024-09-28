@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,25 +24,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.annotation.LayoutRes
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.never
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.whenever
 import com.vrem.util.EMPTY
 import com.vrem.wifianalyzer.MainContextHelper
 import com.vrem.wifianalyzer.R
 import com.vrem.wifianalyzer.RobolectricUtil
-import com.vrem.wifianalyzer.navigation.NavigationMenu
 import com.vrem.wifianalyzer.wifi.band.WiFiBand
 import com.vrem.wifianalyzer.wifi.model.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
-@Config(sdk = [Build.VERSION_CODES.TIRAMISU])
+@Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
 class ConnectionViewTest {
     private val ssid = "SSID"
     private val bssid = "BSSID"
@@ -53,16 +49,17 @@ class ConnectionViewTest {
     private val wiFiData: WiFiData = mock()
     private val accessPointDetail: AccessPointDetail = mock()
     private val accessPointPopup: AccessPointPopup = mock()
-    private val fixture = ConnectionView(mainActivity, accessPointDetail, accessPointPopup)
+    private val warningView: WarningView = mock()
+    private val fixture = ConnectionView(mainActivity, accessPointDetail, accessPointPopup, warningView)
 
     @After
     fun tearDown() {
+        verifyNoMoreInteractions(warningView)
         MainContextHelper.INSTANCE.restore()
-        mainActivity.currentNavigationMenu(NavigationMenu.ACCESS_POINTS)
     }
 
     @Test
-    fun testConnectionGoneWithNoConnectionInformation() {
+    fun connectionGoneWithNoConnectionInformation() {
         // setup
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
         whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
@@ -70,12 +67,13 @@ class ConnectionViewTest {
         // execute
         fixture.update(wiFiData)
         // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.connection).visibility)
+        assertThat(mainActivity.findViewById<View>(R.id.connection).visibility).isEqualTo(View.GONE)
         verifyConnectionInformation()
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testConnectionGoneWithConnectionInformationAndHideType() {
+    fun connectionGoneWithConnectionInformationAndHideType() {
         // setup
         val connection = withConnection(withWiFiAdditional())
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
@@ -85,12 +83,13 @@ class ConnectionViewTest {
         // execute
         fixture.update(wiFiData)
         // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.connection).visibility)
+        assertThat(mainActivity.findViewById<View>(R.id.connection).visibility).isEqualTo(View.GONE)
         verifyConnectionInformation()
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testConnectionVisibleWithConnectionInformation() {
+    fun connectionVisibleWithConnectionInformation() {
         // setup
         val connection = withConnection(withWiFiAdditional())
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
@@ -100,15 +99,17 @@ class ConnectionViewTest {
         // execute
         fixture.update(wiFiData)
         // validate
-        assertEquals(View.VISIBLE, mainActivity.findViewById<View>(R.id.connection).visibility)
+        assertThat(mainActivity.findViewById<View>(R.id.connection).visibility).isEqualTo(View.VISIBLE)
         verifyConnectionInformation()
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testConnectionWithConnectionInformation() {
+    fun connectionWithConnectionInformation() {
         // setup
         val wiFiAdditional = withWiFiAdditional()
         val connection = withConnection(wiFiAdditional)
+        val expectedText = mainActivity.getString(R.string.current_connection)
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
         whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
         withConnectionInformation(connection)
@@ -119,14 +120,16 @@ class ConnectionViewTest {
         val wiFiConnection = wiFiAdditional.wiFiConnection
         val view = mainActivity.findViewById<View>(R.id.connection)
         val ipAddressView = view.findViewById<TextView>(R.id.ipAddress)
-        assertEquals(wiFiConnection.ipAddress, ipAddressView.text.toString())
+        assertThat(ipAddressView.text.toString()).isEqualTo(wiFiConnection.ipAddress)
         val linkSpeedView = view.findViewById<TextView>(R.id.linkSpeed)
-        assertEquals(View.VISIBLE, linkSpeedView.visibility)
-        assertEquals(wiFiConnection.linkSpeed.toString() + WifiInfo.LINK_SPEED_UNITS, linkSpeedView.text.toString())
+        assertThat(linkSpeedView.visibility).isEqualTo(View.VISIBLE)
+        assertThat(linkSpeedView.text.toString()).isEqualTo(wiFiConnection.linkSpeed.toString() + WifiInfo.LINK_SPEED_UNITS)
+        assertThat(view.findViewById<TextView>(R.id.currentConnection).text.toString()).isEqualTo(expectedText)
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testConnectionWithInvalidLinkSpeed() {
+    fun connectionWithInvalidLinkSpeed() {
         // setup
         val wiFiIdentifier = WiFiIdentifier(ssid, bssid)
         val wiFiConnection = WiFiConnection(wiFiIdentifier, ipAddress, WiFiConnection.LINK_SPEED_INVALID)
@@ -140,101 +143,12 @@ class ConnectionViewTest {
         // validate
         val view = mainActivity.findViewById<View>(R.id.connection)
         val linkSpeedView = view.findViewById<TextView>(R.id.linkSpeed)
-        assertEquals(View.GONE, linkSpeedView.visibility)
+        assertThat(linkSpeedView.visibility).isEqualTo(View.GONE)
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testNoDataIsVisibleWithNoWiFiDetails() {
-        // setup
-        whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
-        whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
-        whenever(wiFiData.connection()).thenReturn(withConnection(WiFiAdditional.EMPTY))
-        // execute
-        fixture.update(wiFiData)
-        // validate
-        assertEquals(View.VISIBLE, mainActivity.findViewById<View>(R.id.no_data).visibility)
-        assertEquals(View.VISIBLE, mainActivity.findViewById<View>(R.id.no_location).visibility)
-        assertEquals(View.VISIBLE, mainActivity.findViewById<View>(R.id.throttling).visibility)
-        verify(wiFiData).wiFiDetails
-    }
-
-    @Test
-    fun testNoDataIsGoneWithWiFiDetails() {
-        // setup
-        val wiFiDetail = withConnection(WiFiAdditional.EMPTY)
-        whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
-        whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
-        whenever(wiFiData.connection()).thenReturn(wiFiDetail)
-        whenever(wiFiData.wiFiDetails).thenReturn(listOf(wiFiDetail))
-        // execute
-        fixture.update(wiFiData)
-        // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.no_data).visibility)
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.no_location).visibility)
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.throttling).visibility)
-        verify(wiFiData).wiFiDetails
-    }
-
-    @Test
-    fun testNoDataIsGoneWithNavigationMenuThatDoesNotHaveOptionMenu() {
-        // setup
-        mainActivity.currentNavigationMenu(NavigationMenu.VENDORS)
-        whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
-        whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
-        whenever(wiFiData.connection()).thenReturn(withConnection(WiFiAdditional.EMPTY))
-        // execute
-        fixture.update(wiFiData)
-        // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.no_data).visibility)
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.no_location).visibility)
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.throttling).visibility)
-        verify(wiFiData, never()).wiFiDetails
-    }
-
-    @Test
-    fun testScanningIsVisibleWithNoWiFiDetails() {
-        // setup
-        whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
-        whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
-        whenever(wiFiData.connection()).thenReturn(withConnection(WiFiAdditional.EMPTY))
-        // execute
-        fixture.update(wiFiData)
-        // validate
-        assertEquals(View.VISIBLE, mainActivity.findViewById<View>(R.id.scanning).visibility)
-        verify(wiFiData).wiFiDetails
-    }
-
-    @Test
-    fun testScanningIsGoneWithWiFiDetails() {
-        // setup
-        val wiFiDetail = withConnection(WiFiAdditional.EMPTY)
-        whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
-        whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
-        whenever(wiFiData.connection()).thenReturn(wiFiDetail)
-        whenever(wiFiData.wiFiDetails).thenReturn(listOf(wiFiDetail))
-        // execute
-        fixture.update(wiFiData)
-        // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.scanning).visibility)
-        verify(wiFiData).wiFiDetails
-    }
-
-    @Test
-    fun testScanningIsGoneWithNavigationMenuThatDoesNotHaveOptionMenu() {
-        // setup
-        mainActivity.currentNavigationMenu(NavigationMenu.VENDORS)
-        whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
-        whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
-        whenever(wiFiData.connection()).thenReturn(withConnection(WiFiAdditional.EMPTY))
-        // execute
-        fixture.update(wiFiData)
-        // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.scanning).visibility)
-        verify(wiFiData, never()).wiFiDetails
-    }
-
-    @Test
-    fun testViewCompactAddsPopup() {
+    fun viewCompactAddsPopup() {
         // setup
         val connection = withConnection(withWiFiAdditional())
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
@@ -246,10 +160,11 @@ class ConnectionViewTest {
         // validate
         verify(accessPointPopup).attach(view.findViewById(R.id.attachPopup), connection)
         verify(accessPointPopup).attach(view.findViewById(R.id.ssid), connection)
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testWiFiSupportIsGoneWhenWiFiBandIsAvailable() {
+    fun wiFiSupportIsGoneWhenWiFiBandIsAvailable() {
         // setup
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ2)
         whenever(settings.connectionViewType()).thenReturn(ConnectionViewType.COMPLETE)
@@ -257,13 +172,13 @@ class ConnectionViewTest {
         // execute
         fixture.update(wiFiData)
         // validate
-        assertEquals(View.GONE, mainActivity.findViewById<View>(R.id.main_wifi_support).visibility)
+        assertThat(mainActivity.findViewById<View>(R.id.main_wifi_support).visibility).isEqualTo(View.GONE)
         verify(settings).wiFiBand()
-        verify(wiFiData).wiFiDetails
+        verify(warningView).update(wiFiData)
     }
 
     @Test
-    fun testWiFiSupportIsVisibleWhenWiFiBandIsNotAvailable() {
+    fun wiFiSupportIsVisibleWhenWiFiBandIsNotAvailable() {
         // setup
         val expectedText = mainActivity.resources.getString(WiFiBand.GHZ6.textResource)
         whenever(settings.wiFiBand()).thenReturn(WiFiBand.GHZ6)
@@ -274,18 +189,18 @@ class ConnectionViewTest {
         fixture.update(wiFiData)
         // validate
         val textView = mainActivity.findViewById<TextView>(R.id.main_wifi_support)
-        assertEquals(View.VISIBLE, textView.visibility)
-        assertEquals(expectedText, textView.text)
+        assertThat(textView.visibility).isEqualTo(View.VISIBLE)
+        assertThat(textView.text).isEqualTo(expectedText)
         verify(settings).wiFiBand()
         verify(wiFiManagerWrapper).is6GHzBandSupported()
-        verify(wiFiData).wiFiDetails
+        verify(warningView).update(wiFiData)
     }
 
     private fun withConnection(wiFiAdditional: WiFiAdditional): WiFiDetail =
         WiFiDetail(
             WiFiIdentifier(ssid, bssid),
-            String.EMPTY,
-            WiFiSignal(2435, 2435, WiFiWidth.MHZ_20, -55, true),
+            WiFiSecurity.EMPTY,
+            WiFiSignal(2435, 2435, WiFiWidth.MHZ_20, -55),
             wiFiAdditional
         )
 

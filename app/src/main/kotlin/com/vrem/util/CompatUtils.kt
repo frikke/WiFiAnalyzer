@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,28 +27,11 @@ import android.net.wifi.ScanResult
 import android.os.Build
 import java.util.*
 
-fun Context.createContext(newLocale: Locale): Context =
-    if (buildMinVersionN()) {
-        createContextAndroidN(newLocale)
-    } else {
-        createContextLegacy(newLocale)
-    }
-
-@TargetApi(Build.VERSION_CODES.N)
-private fun Context.createContextAndroidN(newLocale: Locale): Context {
+fun Context.createContext(newLocale: Locale): Context {
     val resources: Resources = resources
     val configuration: Configuration = resources.configuration
     configuration.setLocale(newLocale)
     return createConfigurationContext(configuration)
-}
-
-@Suppress("DEPRECATION")
-private fun Context.createContextLegacy(newLocale: Locale): Context {
-    val resources: Resources = resources
-    val configuration: Configuration = resources.configuration
-    configuration.locale = newLocale
-    resources.updateConfiguration(configuration, resources.displayMetrics)
-    return this
 }
 
 fun Context.packageInfo(): PackageInfo =
@@ -62,7 +45,6 @@ fun Context.packageInfo(): PackageInfo =
 private fun Context.packageInfoAndroidT(): PackageInfo =
     packageManager.getPackageInfo(packageName, PackageInfoFlags.of(0))
 
-@Suppress("DEPRECATION")
 private fun Context.packageInfoLegacy(): PackageInfo =
     packageManager.getPackageInfo(packageName, 0)
 
@@ -74,9 +56,7 @@ fun ScanResult.ssid(): String =
     }.removeSurrounding("\"")
 
 @TargetApi(Build.VERSION_CODES.TIRAMISU)
-private fun ScanResult.ssidAndroidT(): String =
-    wifiSsid?.toString() ?: String.EMPTY
+private fun ScanResult.ssidAndroidT(): String = String.nullToEmpty(wifiSsid?.toString())
 
 @Suppress("DEPRECATION")
-private fun ScanResult.ssidLegacy(): String =
-    if (SSID == null) String.EMPTY else SSID
+private fun ScanResult.ssidLegacy(): String = String.nullToEmpty(SSID)

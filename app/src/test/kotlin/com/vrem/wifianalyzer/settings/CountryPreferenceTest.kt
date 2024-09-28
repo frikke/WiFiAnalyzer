@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@ import android.os.Build
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.vrem.wifianalyzer.RobolectricUtil
 import com.vrem.wifianalyzer.wifi.band.WiFiChannelCountry.Companion.findAll
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -30,7 +29,7 @@ import org.robolectric.annotation.Config
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
-@Config(sdk = [Build.VERSION_CODES.TIRAMISU])
+@Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
 class CountryPreferenceTest {
     private val mainActivity = RobolectricUtil.INSTANCE.activity
     private val countries = findAll()
@@ -38,26 +37,24 @@ class CountryPreferenceTest {
     private val currentLocale = Locale.getDefault()
 
     @Test
-    fun testEntries() {
+    fun entries() {
         // execute
         val actual: Array<CharSequence> = fixture.entries
         // validate
-        assertEquals(countries.size, actual.size)
+        assertThat(actual).hasSize(countries.size)
         countries.forEach {
-            val countryName: String = it.countryName(currentLocale)
-            assertTrue(countryName, actual.contains(countryName))
+            assertThat(actual).contains(it.countryName(currentLocale))
         }
     }
 
     @Test
-    fun testEntryValues() {
+    fun entryValues() {
         // execute
         val actual: Array<CharSequence> = fixture.entryValues
         // validate
-        assertEquals(countries.size, actual.size)
+        assertThat(actual).hasSize(countries.size)
         countries.forEach {
-            val countryCode: String = it.countryCode()
-            assertTrue(countryCode, actual.contains(countryCode))
+            assertThat(actual).contains(it.countryCode())
         }
     }
 }

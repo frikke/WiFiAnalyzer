@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ private object SyncAvoid {
             .toSortedMap()
     val supportedLocales: List<Locale> = setOf(
         BULGARIAN,
+        GREEK,
         Locale.SIMPLIFIED_CHINESE,
         Locale.TRADITIONAL_CHINESE,
         Locale.ENGLISH,
@@ -44,29 +45,25 @@ private object SyncAvoid {
         PORTUGUESE,
         SPANISH,
         RUSSIAN,
+        TURKISH,
         UKRAINIAN,
         defaultLocale
-    )
-            .toList()
+    ).toList()
 }
 
 val BULGARIAN: Locale = Locale("bg")
-
+val GREEK: Locale = Locale("el")
 val POLISH: Locale = Locale("pl")
-
 val PORTUGUESE: Locale = Locale("pt")
-
 val SPANISH: Locale = Locale("es")
-
 val RUSSIAN: Locale = Locale("ru")
-
+val TURKISH: Locale = Locale("tr")
 val UKRAINIAN: Locale = Locale("uk")
 
 private const val SEPARATOR: String = "_"
 
 fun findByCountryCode(countryCode: String): Locale =
-    SyncAvoid.availableLocales
-        .find { countryCode.toCapitalize(Locale.getDefault()) == it.country }
+    SyncAvoid.availableLocales.firstOrNull { countryCode.toCapitalize(Locale.getDefault()) == it.country }
         ?: SyncAvoid.defaultLocale
 
 fun allCountries(): List<Locale> = SyncAvoid.countriesLocales.values.toList()
@@ -76,7 +73,7 @@ fun findByLanguageTag(languageTag: String): Locale {
         val locale: Locale = fromLanguageTag(languageTag)
         it.language == locale.language && it.country == locale.country
     }
-    return SyncAvoid.supportedLocales.find(languageTagPredicate) ?: SyncAvoid.defaultLocale
+    return SyncAvoid.supportedLocales.firstOrNull(languageTagPredicate) ?: SyncAvoid.defaultLocale
 }
 
 fun supportedLanguages(): List<Locale> = SyncAvoid.supportedLocales

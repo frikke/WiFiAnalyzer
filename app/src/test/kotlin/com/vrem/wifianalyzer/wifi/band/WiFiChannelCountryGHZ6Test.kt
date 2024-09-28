@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,9 @@
  */
 package com.vrem.wifianalyzer.wifi.band
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
+import java.util.SortedSet
 
 class WiFiChannelCountryGHZ6Test {
     private val channelsSet: SortedSet<Int> = sortedSetOf(
@@ -36,14 +35,14 @@ class WiFiChannelCountryGHZ6Test {
     private val fixture = WiFiChannelCountryGHZ6()
 
     @Test
-    fun testChannelsForWorld() {
+    fun channelsForWorld() {
         listOf("GB", "XYZ", "US", "AU", "AE")
             .forEach { _ -> validateChannels(channelsSet, fixture.findChannels()) }
     }
 
     private fun validateChannels(expected: SortedSet<Int>, actual: SortedSet<Int>) {
-        assertEquals(expected.size, actual.size)
-        assertTrue(actual.containsAll(expected))
+        assertThat(actual).hasSize(expected.size)
+        assertThat(actual).containsAll(expected)
     }
 
 }

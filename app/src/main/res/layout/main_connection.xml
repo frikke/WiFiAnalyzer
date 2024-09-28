@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?><!--
   ~ WiFiAnalyzer
-  ~ Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+  ~ Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
@@ -34,6 +34,15 @@
         android:visibility="gone"
         tools:visibility="visible">
 
+        <TextView
+            android:id="@+id/currentConnection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/list_view_item_horizontal_spacer"
+            android:textColor="@color/selected"
+            android:textStyle="bold"
+            android:text="@string/current_connection" />
+
         <LinearLayout
             android:id="@+id/connectionDetail"
             android:layout_width="match_parent"
@@ -64,9 +73,16 @@
                 android:textStyle="bold"
                 tools:text="192.168.111.222" />
         </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/selected" />
     </LinearLayout>
 
     <include layout="@layout/main_wifi_support" />
 
-    <include layout="@layout/main_nodata" />
+    <include layout="@layout/main_wifi_throttling" />
+
+    <include layout="@layout/main_warning" />
 </LinearLayout>

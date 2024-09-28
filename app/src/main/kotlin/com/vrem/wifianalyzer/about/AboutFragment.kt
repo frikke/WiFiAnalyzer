@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,8 @@ import com.vrem.wifianalyzer.MainContext
 import com.vrem.wifianalyzer.R
 import com.vrem.wifianalyzer.databinding.AboutContentBinding
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 class AboutFragment : Fragment() {
 
@@ -66,19 +67,24 @@ class AboutFragment : Fragment() {
 
     private fun wiFiState(binding: AboutContentBinding) {
         val wiFiManagerWrapper = MainContext.INSTANCE.wiFiManagerWrapper
-        wiFiBand(
+        toggle(
+            wiFiManagerWrapper.isScanThrottleEnabled(),
+            binding.aboutWifiThrottlingOn,
+            binding.aboutWifiThrottlingOff
+        )
+        toggle(
             wiFiManagerWrapper.is5GHzBandSupported(),
             binding.aboutWifiBand5ghzSuccess,
             binding.aboutWifiBand5ghzFails
         )
-        wiFiBand(
+        toggle(
             wiFiManagerWrapper.is6GHzBandSupported(),
             binding.aboutWifiBand6ghzSuccess,
             binding.aboutWifiBand6ghzFails
         )
     }
 
-    private fun wiFiBand(bandSupported: Boolean, aboutWifiBandSuccess: TextView, aboutWifiBandFails: TextView) {
+    private fun toggle(bandSupported: Boolean, aboutWifiBandSuccess: TextView, aboutWifiBandFails: TextView) {
         if (bandSupported) {
             aboutWifiBandSuccess.visibility = View.VISIBLE
             aboutWifiBandFails.visibility = View.GONE
@@ -106,9 +112,9 @@ class AboutFragment : Fragment() {
     private fun version(activity: FragmentActivity): String {
         val configuration = MainContext.INSTANCE.configuration
         return applicationVersion(activity) +
-                ifElse(configuration.sizeAvailable, "S") +
-                ifElse(configuration.largeScreen, "L") +
-                " (" + Build.VERSION.RELEASE + "-" + Build.VERSION.SDK_INT + ")"
+            ifElse(configuration.sizeAvailable, "S") +
+            ifElse(configuration.largeScreen, "L") +
+            " (" + Build.VERSION.RELEASE + "-" + Build.VERSION.SDK_INT + ")"
     }
 
     private fun applicationVersion(activity: FragmentActivity): String =

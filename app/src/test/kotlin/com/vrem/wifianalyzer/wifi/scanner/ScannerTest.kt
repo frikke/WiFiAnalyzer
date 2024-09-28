@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,16 +17,15 @@
  */
 package com.vrem.wifianalyzer.wifi.scanner
 
-import com.nhaarman.mockitokotlin2.*
 import com.vrem.wifianalyzer.permission.PermissionService
 import com.vrem.wifianalyzer.settings.Settings
 import com.vrem.wifianalyzer.wifi.manager.WiFiManagerWrapper
 import com.vrem.wifianalyzer.wifi.model.WiFiData
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.*
 
 class ScannerTest {
     private val settings: Settings = mock()
@@ -65,13 +64,13 @@ class ScannerTest {
     }
 
     @Test
-    fun testStop() {
+    fun stop() {
         // setup
         whenever(settings.wiFiOffOnExit()).thenReturn(false)
         // execute
         fixture.stop()
         // validate
-        assertEquals(0, fixture.registered())
+        assertThat(fixture.registered()).isEqualTo(0)
         verify(settings).wiFiOffOnExit()
         verify(wiFiManagerWrapper, never()).disableWiFi()
         verify(periodicScan).stop()
@@ -79,13 +78,13 @@ class ScannerTest {
     }
 
     @Test
-    fun testStopWithDisableWiFiOnExit() {
+    fun stopWithDisableWiFiOnExit() {
         // setup
         whenever(settings.wiFiOffOnExit()).thenReturn(true)
         // execute
         fixture.stop()
         // validate
-        assertEquals(0, fixture.registered())
+        assertThat(fixture.registered()).isEqualTo(0)
         verify(wiFiManagerWrapper).disableWiFi()
         verify(periodicScan).stop()
         verify(scanResultsReceiver).unregister()
@@ -93,7 +92,7 @@ class ScannerTest {
     }
 
     @Test
-    fun testPause() {
+    fun pause() {
         // execute
         fixture.pause()
         // validate
@@ -102,7 +101,7 @@ class ScannerTest {
     }
 
     @Test
-    fun testResume() {
+    fun resume() {
         // execute
         fixture.resume()
         // validate
@@ -110,45 +109,45 @@ class ScannerTest {
     }
 
     @Test
-    fun testRunning() {
+    fun running() {
         // setup
         whenever(periodicScan.running).thenReturn(true)
         // execute
         val actual = fixture.running()
         // validate
-        assertTrue(actual)
+        assertThat(actual).isTrue()
         verify(periodicScan).running
     }
 
     @Test
-    fun testRegister() {
+    fun register() {
         // setup
-        assertEquals(3, fixture.registered())
+        assertThat(fixture.registered()).isEqualTo(3)
         // execute
         fixture.register(updateNotifier2)
         // validate
-        assertEquals(4, fixture.registered())
+        assertThat(fixture.registered()).isEqualTo(4)
     }
 
     @Test
-    fun testUnregister() {
+    fun unregister() {
         // setup
-        assertEquals(3, fixture.registered())
+        assertThat(fixture.registered()).isEqualTo(3)
         // execute
         fixture.unregister(updateNotifier2)
         // validate
-        assertEquals(2, fixture.registered())
+        assertThat(fixture.registered()).isEqualTo(2)
     }
 
     @Test
-    fun testUpdate() {
+    fun update() {
         // setup
         whenever(transformer.transformToWiFiData()).thenReturn(wiFiData)
         whenever(permissionService.enabled()).thenReturn(true)
         // execute
         fixture.update()
         // validate
-        assertEquals(wiFiData, fixture.wiFiData())
+        assertThat(fixture.wiFiData()).isEqualTo(wiFiData)
         verify(wiFiManagerWrapper).enableWiFi()
         verify(permissionService).enabled()
         verify(scanResultsReceiver).register()
@@ -159,7 +158,7 @@ class ScannerTest {
     }
 
     @Test
-    fun testUpdateShouldScanResultsOnce() {
+    fun updateShouldScanResultsOnce() {
         // setup
         val expected = 3
         whenever(transformer.transformToWiFiData()).thenReturn(wiFiData)
@@ -179,7 +178,7 @@ class ScannerTest {
     }
 
     @Test
-    fun testUpdateWithRequirementPermissionDisabled() {
+    fun updateWithRequirementPermissionDisabled() {
         // setup
         whenever(transformer.transformToWiFiData()).thenReturn(wiFiData)
         whenever(permissionService.enabled()).thenReturn(false)
@@ -196,7 +195,7 @@ class ScannerTest {
     }
 
     @Test
-    fun testToggleWhenRunning() {
+    fun toggleWhenRunning() {
         // setup
         fixture.periodicScan = periodicScan
         whenever(periodicScan.running).thenReturn(true)
@@ -208,7 +207,7 @@ class ScannerTest {
     }
 
     @Test
-    fun testToggleWhenNotRunning() {
+    fun toggleWhenNotRunning() {
         // setup
         fixture.periodicScan = periodicScan
         whenever(periodicScan.running).thenReturn(false)

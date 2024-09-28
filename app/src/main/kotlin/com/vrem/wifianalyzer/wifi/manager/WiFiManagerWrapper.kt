@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,13 @@ class WiFiManagerWrapper(
     fun is6GHzBandSupported(): Boolean =
         if (minVersionR()) {
             wifiManager.is6GHzBandSupported
+        } else {
+            false
+        }
+
+    fun isScanThrottleEnabled(): Boolean =
+        if (minVersionR()) {
+            wifiManager.isScanThrottleEnabled
         } else {
             false
         }

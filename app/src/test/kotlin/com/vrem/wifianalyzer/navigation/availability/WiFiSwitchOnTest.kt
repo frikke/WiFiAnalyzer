@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ import android.os.Build
 import android.view.Menu
 import android.view.MenuItem
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.nhaarman.mockitokotlin2.*
 import com.vrem.wifianalyzer.MainContextHelper
 import com.vrem.wifianalyzer.R
 import com.vrem.wifianalyzer.navigation.options.OptionMenu
@@ -29,10 +28,11 @@ import com.vrem.wifianalyzer.wifi.band.WiFiBand
 import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.*
 import org.robolectric.annotation.Config
 
 @RunWith(AndroidJUnit4::class)
-@Config(sdk = [Build.VERSION_CODES.TIRAMISU])
+@Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
 class WiFiSwitchOnTest {
     private val mainActivity = MainContextHelper.INSTANCE.mainActivity
     private val settings = MainContextHelper.INSTANCE.settings
@@ -51,7 +51,7 @@ class WiFiSwitchOnTest {
     }
 
     @Test
-    fun testNavigationOptionWiFiSwitchOnWithMenuWillSetTitleAndVisibility() {
+    fun navigationOptionWiFiSwitchOnWithMenuWillSetTitleAndVisibility() {
         // setup
         val expected = "XYZ\n123"
         whenever(mainActivity.optionMenu).thenReturn(optionMenu)
@@ -72,7 +72,7 @@ class WiFiSwitchOnTest {
     }
 
     @Test
-    fun testNavigationOptionWiFiSwitchOnWithNoMenuWillNotSetTitleAndVisibility() {
+    fun navigationOptionWiFiSwitchOnWithNoMenuWillNotSetTitleAndVisibility() {
         // setup
         whenever(mainActivity.optionMenu).thenReturn(optionMenu)
         whenever(optionMenu.menu).thenReturn(null)

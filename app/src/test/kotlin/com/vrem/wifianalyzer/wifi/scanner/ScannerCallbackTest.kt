@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,13 @@ package com.vrem.wifianalyzer.wifi.scanner
 
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiInfo
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.verify
-import com.nhaarman.mockitokotlin2.verifyNoMoreInteractions
-import com.nhaarman.mockitokotlin2.whenever
 import com.vrem.wifianalyzer.wifi.manager.WiFiManagerWrapper
 import org.junit.After
 import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.verifyNoMoreInteractions
+import org.mockito.kotlin.whenever
 
 class ScannerCallbackTest {
     private val wiFiManagerWrapper: WiFiManagerWrapper = mock()
@@ -43,7 +43,7 @@ class ScannerCallbackTest {
     }
 
     @Test
-    fun testOnSuccess() {
+    fun onSuccess() {
         // setup
         whenever(wiFiManagerWrapper.scanResults()).thenReturn(scanResults)
         whenever(wiFiManagerWrapper.wiFiInfo()).thenReturn(wifiInfo)

@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +19,12 @@ package com.vrem.wifianalyzer.navigation.availability
 
 import android.view.Menu
 import android.view.MenuItem
-import com.nhaarman.mockitokotlin2.*
 import com.vrem.wifianalyzer.MainContextHelper
 import com.vrem.wifianalyzer.R
 import com.vrem.wifianalyzer.navigation.options.OptionMenu
 import org.junit.After
 import org.junit.Test
+import org.mockito.kotlin.*
 
 class WiFiSwitchOffTest {
     private val mainActivity = MainContextHelper.INSTANCE.mainActivity
@@ -42,7 +42,7 @@ class WiFiSwitchOffTest {
     }
 
     @Test
-    fun testNavigationOptionWiFiSwitchOffWithMenuWillSetVisibility() {
+    fun navigationOptionWiFiSwitchOffWithMenuWillSetVisibility() {
         // setup
         whenever(mainActivity.optionMenu).thenReturn(optionMenu)
         whenever(optionMenu.menu).thenReturn(menu)
@@ -57,7 +57,7 @@ class WiFiSwitchOffTest {
     }
 
     @Test
-    fun testNavigationOptionWiFiSwitchOffWithNoMenuWillNotVisibility() {
+    fun navigationOptionWiFiSwitchOffWithNoMenuWillNotVisibility() {
         // setup
         whenever(mainActivity.optionMenu).thenReturn(optionMenu)
         whenever(mainActivity.optionMenu).thenReturn(optionMenu)

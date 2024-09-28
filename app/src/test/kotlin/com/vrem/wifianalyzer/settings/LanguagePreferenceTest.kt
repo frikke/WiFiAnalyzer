@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,7 @@ import com.vrem.util.supportedLanguages
 import com.vrem.util.toCapitalize
 import com.vrem.util.toLanguageTag
 import com.vrem.wifianalyzer.RobolectricUtil
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -32,33 +31,31 @@ import org.robolectric.annotation.Config
 import java.util.*
 
 @RunWith(AndroidJUnit4::class)
-@Config(sdk = [Build.VERSION_CODES.TIRAMISU])
+@Config(sdk = [Build.VERSION_CODES.UPSIDE_DOWN_CAKE])
 class LanguagePreferenceTest {
     private val mainActivity = RobolectricUtil.INSTANCE.activity
     private val languages = supportedLanguages()
     private val fixture = LanguagePreference(mainActivity, Robolectric.buildAttributeSet().build())
 
     @Test
-    fun testEntries() {
+    fun entries() {
         // execute
         val actual: Array<CharSequence> = fixture.entries
         // validate
-        assertEquals(languages.size, actual.size)
+        assertThat(actual).hasSize(languages.size)
         languages.forEach {
-            val displayName: String = it.getDisplayName(it).toCapitalize(Locale.getDefault())
-            assertTrue(displayName, actual.contains(displayName))
+            assertThat(actual).contains(it.getDisplayName(it).toCapitalize(Locale.getDefault()))
         }
     }
 
     @Test
-    fun testEntryValues() {
+    fun entryValues() {
         // execute
         val actual: Array<CharSequence> = fixture.entryValues
         // validate
-        assertEquals(languages.size, actual.size)
+        assertThat(actual).hasSize(languages.size)
         languages.forEach {
-            val languageTag: String = toLanguageTag(it)
-            assertTrue(languageTag, actual.contains(languageTag))
+            assertThat(actual).contains(toLanguageTag(it))
         }
     }
 }

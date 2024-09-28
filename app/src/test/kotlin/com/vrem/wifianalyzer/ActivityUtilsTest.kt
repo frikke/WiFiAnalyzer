@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,10 +23,10 @@ import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
-import com.nhaarman.mockitokotlin2.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Test
+import org.mockito.kotlin.*
 
 class ActivityUtilsTest {
     private val window: Window = mock()
@@ -48,14 +48,14 @@ class ActivityUtilsTest {
     }
 
     @Test
-    fun testSetupToolbar() {
+    fun setupToolbar() {
         // setup
         whenever<Any>(mainActivity.findViewById(R.id.toolbar)).thenReturn(toolbar)
         whenever(mainActivity.supportActionBar).thenReturn(actionBar)
         // execute
         val actual = mainActivity.setupToolbar()
         // validate
-        assertEquals(toolbar, actual)
+        assertThat(actual).isEqualTo(toolbar)
         verify(mainActivity).findViewById<View>(R.id.toolbar)
         verify(mainActivity).supportActionBar
         verify(mainActivity).setSupportActionBar(toolbar)
@@ -64,7 +64,7 @@ class ActivityUtilsTest {
     }
 
     @Test
-    fun testKeepScreenOnSwitchOn() {
+    fun keepScreenOnSwitchOn() {
         // setup
         whenever(settings.keepScreenOn()).thenReturn(true)
         whenever(mainActivity.window).thenReturn(window)
@@ -77,7 +77,7 @@ class ActivityUtilsTest {
     }
 
     @Test
-    fun testKeepScreenOnSwitchOff() {
+    fun keepScreenOnSwitchOff() {
         // setup
         whenever(settings.keepScreenOn()).thenReturn(false)
         whenever(mainActivity.window).thenReturn(window)
@@ -90,7 +90,7 @@ class ActivityUtilsTest {
     }
 
     @Test
-    fun testStartWiFiSettings() {
+    fun startWiFiSettings() {
         // execute
         mainActivity.startWiFiSettings()
         // validate
@@ -98,7 +98,7 @@ class ActivityUtilsTest {
     }
 
     @Test
-    fun testStartLocationSettings() {
+    fun startLocationSettings() {
         // execute
         mainActivity.startLocationSettings()
         // validate

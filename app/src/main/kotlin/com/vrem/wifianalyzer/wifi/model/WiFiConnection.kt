@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,12 @@ package com.vrem.wifianalyzer.wifi.model
 
 import com.vrem.util.EMPTY
 
-data class WiFiConnection(val wiFiIdentifier: WiFiIdentifier = WiFiIdentifier.EMPTY,
-                          val ipAddress: String = String.EMPTY,
-                          val linkSpeed: Int = LINK_SPEED_INVALID) :
-        Comparable<WiFiConnection> {
+data class WiFiConnection(
+    val wiFiIdentifier: WiFiIdentifier = WiFiIdentifier.EMPTY,
+    val ipAddress: String = String.EMPTY,
+    val linkSpeed: Int = LINK_SPEED_INVALID
+) :
+    Comparable<WiFiConnection> {
 
     val connected: Boolean
         get() = EMPTY != this

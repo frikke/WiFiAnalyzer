@@ -1,6 +1,6 @@
 /*
  * WiFiAnalyzer
- * Copyright (C) 2015 - 2022 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
+ * Copyright (C) 2015 - 2024 VREM Software Development <VREMSoftwareDevelopment@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,59 +22,59 @@ import com.vrem.wifianalyzer.wifi.band.WiFiBand
 import com.vrem.wifianalyzer.wifi.band.WiFiChannel
 import com.vrem.wifianalyzer.wifi.band.WiFiChannelPair
 import com.vrem.wifianalyzer.wifi.band.WiFiChannels
-import org.junit.Assert.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import java.util.*
+import java.util.Locale
 
 class ConfigurationTest {
     private val fixture = Configuration(true)
 
     @Test
-    fun testSizeAvailable() {
+    fun sizeAvailable() {
         // execute & validate
-        assertTrue(fixture.sizeAvailable)
+        assertThat(fixture.sizeAvailable).isTrue()
     }
 
     @Test
-    fun testSizeIsNotAvailable() {
+    fun sizeIsNotAvailable() {
         // execute
         fixture.size = SIZE_MIN
         // validate
-        assertFalse(fixture.sizeAvailable)
+        assertThat(fixture.sizeAvailable).isFalse()
     }
 
     @Test
-    fun testLargeScreen() {
+    fun largeScreen() {
         // execute & validate
-        assertTrue(fixture.largeScreen)
+        assertThat(fixture.largeScreen).isTrue()
     }
 
     @Test
-    fun testWiFiChannelPairWithInit() {
+    fun wiFiChannelPairWithInit() {
         // execute & validate
-        WiFiBand.values().forEach {
-            assertEquals(WiFiChannels.UNKNOWN, fixture.wiFiChannelPair(it))
+        WiFiBand.entries.forEach {
+            assertThat(fixture.wiFiChannelPair(it)).isEqualTo(WiFiChannels.UNKNOWN)
         }
     }
 
     @Test
-    fun testWiFiChannelPairWithCountry() {
+    fun wiFiChannelPairWithCountry() {
         // execute
         fixture.wiFiChannelPair(Locale.US.country)
         // validate
-        WiFiBand.values().forEach {
-            assertEquals(it.wiFiChannels.wiFiChannelPairFirst(Locale.US.country), fixture.wiFiChannelPair(it))
+        WiFiBand.entries.forEach {
+            assertThat(fixture.wiFiChannelPair(it)).isEqualTo(it.wiFiChannels.wiFiChannelPairFirst(Locale.US.country))
         }
     }
 
     @Test
-    fun testWiFiChannelPairWithWiFiBand() {
+    fun wiFiChannelPairWithWiFiBand() {
         // setup
         val expected = WiFiChannelPair(WiFiChannel(1, 2), WiFiChannel(3, 4))
         // execute
         fixture.wiFiChannelPair(WiFiBand.GHZ5, expected)
         // validate
-        assertEquals(expected, fixture.wiFiChannelPair(WiFiBand.GHZ5))
+        assertThat(fixture.wiFiChannelPair(WiFiBand.GHZ5)).isEqualTo(expected)
     }
 
 }
